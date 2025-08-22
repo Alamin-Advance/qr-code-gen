@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic-settings
+qrcode[pil]
+pillow
+python-multipart
