@@ -134,13 +134,13 @@ def issue_qr(
         exp_local_str = "No expiry"
 
     print_info = {
-        "Full Name": rec.full_name,
-        "Email": rec.email,
-        "Role": rec.role,
-        "Employee ID": rec.employee_id,
-        "Department": rec.department,
-        "Valid Until (Local)": exp_local_str,
-        "Max Scans": rec.max_scans,
+        "Kullancı Adı": rec.full_name,
+        "Eposta": rec.email,
+        "Görev": rec.role,
+        "Kullancı No": rec.employee_id,
+        "Bölüm": rec.department,
+        "Aktif Okuma Sureci(Local)": exp_local_str,
+        "Maksımum Okuma": rec.max_scans,
     }
 
     
