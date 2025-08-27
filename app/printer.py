@@ -33,7 +33,7 @@ def print_qr_ticket(payload: str, info: Dict[str, str]) -> bool:
 
         # Header
         p.set(align="center", width=2, height=2, bold=True)
-        p.text("Gate Entry Pass\n")
+        p.text("Giris QR Kodu\n")
         p.set(align="center", bold=False)
         p.text("-----------------------\n")
 
@@ -52,7 +52,7 @@ def print_qr_ticket(payload: str, info: Dict[str, str]) -> bool:
             p.text(f"{k}: {v}\n")
 
         p.text("-----------------------\n")
-        p.text("Powered by Gate-Entry\n")
+        p.text("Teknik Departmant Destekli\n")
 
         p.cut()
         p.close()
