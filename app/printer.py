@@ -6,7 +6,7 @@ from typing import Dict
 from qrcode import QRCode
 from PIL import Image
 
-PRINTER_IP = "192.168.2.169"   # <-- change if your printer's IP is different
+PRINTER_IP = "192.168.2.169"   # <-- Specify printer's IP
 PRINTER_PORT = 9100
 
 def _native_qr(p: Network, payload: str):
