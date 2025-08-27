@@ -1,0 +1,16 @@
+# Python
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual environments
+.venv/
+.qrenv/
+
+# VS Code
+.vscode/
+
+# QR images
+qr_images/

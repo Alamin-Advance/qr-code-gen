@@ -2,6 +2,11 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic-settings
-qrcode[pil]
+qrcode
 pillow
+python-escpos
+tzdata
+requests
+opencv-python
+pyttsx3
 python-multipart

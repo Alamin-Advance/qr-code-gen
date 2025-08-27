@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Gate QR Issuer</title>
+  <title>Gate QR Issuer (No User ID)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 12px; }
@@ -12,74 +12,109 @@
     .qr img { width: 220px; height: 220px; object-fit: contain; border: 1px dashed #aaa; padding: 8px; border-radius: 8px; background: #fff; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     td { padding: 6px 8px; border-bottom: 1px solid #eee; }
-    .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid #222; background: #111; color: #fff; cursor: pointer; }
+    .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid #222; background: #022047; color: #f4f6f7; cursor: pointer; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .muted { color: #666; font-size: 12px; }
-    .error { color: #b00020; margin-top: 8px; }
     .row2 { display:grid; grid-template-columns: 1fr auto auto; gap:8px; align-items:center; margin-top:8px; }
-    input[readonly] { width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; background:#f7f7f7; }
+    input, select { width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; }
     @media print {.no-print { display:none !important; } .print-area { margin:0; border:none; }}
   </style>
 </head>
 <body>
-  <h1>Giriş QR Alma (Gate QR Issuer)</h1>
-  <p class="muted no-print">Önce <code>/docs</code> → <b>POST /users/create</b> ile kullanıcı oluşturun, sonra buradan QR üretin.</p>
+  <h1>QR KODU OLUŞTURMA</h1>
+  <p class="muted no-print">All person fields are optional. Data is stored with each QR.</p>
 
   <div class="row">
     <div class="card">
-      <h3>QR Oluştur</h3>
+      <h3>QR Oluşturma</h3>
 
-      <!-- FORM (submit'i yakalayıp fetch ile POST gönderiyoruz) -->
+      <!-- FORM (we intercept submit to force POST/fetch) -->
       <form id="issueForm" class="no-print">
-        <label> Kullanıcı ID (User ID)<br>
-          <input name="user_id" type="number" placeholder="örn: 1" required
-                 style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;">
+        <!-- All fields OPTIONAL now -->
+        <label>Employee ID (optional)<br>
+          <input name="employee_id" type="text" placeholder="e.g., EMP-1001">
         </label>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-          <label>Geçerlilik (Dakika)
-            <input name="minutes_valid" type="number" value="10" min="0"
-                   style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;">
+          <label>Full Name (optional)
+            <input name="full_name" type="text" placeholder="e.g., Jane Smith">
           </label>
-          <label>Max Okuma (Scan)
-            <input name="max_scans" type="number" value="1" min="1"
-                   style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;">
+          <label>Email (optional)
+            <input name="email" type="email" placeholder="e.g., jane@company.com">
+          </label>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+          <label>Role (optional)
+            <select name="role">
+              <option value="">-- none --</option>
+              <option>Admin</option>
+              <option>Staff</option>
+              <option>Visitor</option>
+              <option>Security</option>
+            </select>
+          </label>
+
+          <label>Department (optional)
+            <select name="department">
+              <option value="">-- none --</option>
+              <option>Data Analyst</option>
+              <option>Data Scientist</option>
+              <option>HR</option>
+              <option>ML Engineer</option>
+              <option>Software Engineer</option>
+              <option>Security</option>
+              <option>Operations</option>
+              <option>Support</option>
+              <option>Finance</option>
+              <option>Marketing</option>
+              <option>Sales</option>
+              <option>Product</option>
+              <option>QA</option>
+              <option>Other</option>
+            </select>
+          </label>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+          <label>Valid Minutes
+            <input name="minutes_valid" type="number" value="60" min="0">
+          </label>
+          <label>Max Scans
+            <input name="max_scans" type="number" value="2" min="1">
           </label>
         </div>
 
         <div style="display:flex;gap:8px;margin-top:12px;">
-          <button type="submit" class="btn">QR Kodu Oluştur</button>
-          <button type="button" id="btnPrint" class="btn" disabled>Yazdır (Print)</button>
+          <button type="submit" class="btn">QR Kodu Oluşturun (Generate QR)</button>
+          <button type="button" id="btnPrint" class="btn" disabled>yazdir(Print)</button>
         </div>
-        <div id="msg" class="error"></div>
+        <div id="msg" class="muted" style="margin-top:6px;"></div>
       </form>
 
-      <!-- Otomatik payload + verify -->
+      <!-- Payload + copy/verify helpers -->
       <div class="no-print">
-        <h4 style="margin-top:16px;">Payload (otomatik)</h4>
+        <h4 style="margin-top:16px;">Payload</h4>
         <div class="row2">
-          <input id="payload" type="text" readonly placeholder="MyCompanyGate|<token> burada görünecek">
-          <button id="btnCopy" class="btn" type="button">Kopyala</button>
-          <button id="btnVerify" class="btn" type="button" disabled>Doğrula (Test Verify)</button>
+          <input id="payload" type="text" readonly placeholder="MyCompanyGate|<token> will appear here">
+          <button id="btnCopy" class="btn" type="button">Copy</button>
+          <button id="btnVerify" class="btn" type="button" disabled>Test Verify</button>
         </div>
         <div id="verifyMsg" class="muted" style="margin-top:6px;"></div>
       </div>
     </div>
 
     <div class="card print-area">
-      <h3>QR & Kişi Bilgisi (Person Info)</h3>
-      <div class="qr" id="qrBox"><div class="muted">Henüz QR yok</div></div>
+      <h3>QR & Bilgiler</h3>
+      <div class="qr" id="qrBox"><div class="muted">Henüz bir QR yok</div></div>
       <table id="infoTable" style="display:none;">
         <tbody>
-          <tr><td><b>Kullanıcı Adı (Full Name)</b></td><td id="fn"></td></tr>
-          <tr><td><b>E-posta (Email)</b></td><td id="em"></td></tr>
-          <tr><td><b>Görev (Role)</b></td><td id="ro"></td></tr>
-          <!-- NEW ROWS -->
-          <tr><td><b>Çalışan ID (Employee ID)</b></td><td id="eid"></td></tr>
-          <tr><td><b>Departman (Department)</b></td><td id="dep"></td></tr>
-          <!-- /NEW ROWS -->
-          <tr><td><b>Geçerlilik Bitişi (UTC)</b></td><td id="vu"></td></tr>
-          <tr><td><b>Max Okuma (Max Scans)</b></td><td id="ms"></td></tr>
+          <tr><td><b>Full Name</b></td><td id="fn"></td></tr>
+          <tr><td><b>Email</b></td><td id="em"></td></tr>
+          <tr><td><b>Role</b></td><td id="ro"></td></tr>
+          <tr><td><b>Employee ID</b></td><td id="eid"></td></tr>
+          <tr><td><b>Department</b></td><td id="dep"></td></tr>
+          <tr><td><b>Valid Until (Local)</b></td><td id="vu"></td></tr>
           <tr><td><b>Token</b></td><td id="tk" class="muted"></td></tr>
         </tbody>
       </table>
@@ -87,7 +122,7 @@
   </div>
 
   <script>
-    const apiBase = location.origin; // örn: http://127.0.0.1:8000
+    const apiBase = location.origin; // http://127.0.0.1:8000
 
     const form = document.getElementById('issueForm');
     const msg = document.getElementById('msg');
@@ -95,17 +130,14 @@
     const qrBox = document.getElementById('qrBox');
     const infoTable = document.getElementById('infoTable');
 
-    // cells
     const fn = document.getElementById('fn'),
           em = document.getElementById('em'),
           ro = document.getElementById('ro'),
-          eid = document.getElementById('eid'),   // NEW
-          dep = document.getElementById('dep'),   // NEW
+          eid = document.getElementById('eid'),
+          dep = document.getElementById('dep'),
           vu = document.getElementById('vu'),
-          ms = document.getElementById('ms'),
           tk = document.getElementById('tk');
 
-    // payload/verify UI
     const payloadInput = document.getElementById('payload');
     const btnCopy = document.getElementById('btnCopy');
     const btnVerify = document.getElementById('btnVerify');
@@ -114,13 +146,13 @@
     let lastToken = null;
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault();  // GET'i engelle
+      e.preventDefault();
       msg.textContent = '';
       verifyMsg.textContent = '';
       printBtn.disabled = true;
       btnVerify.disabled = true;
       infoTable.style.display = 'none';
-      qrBox.innerHTML = '<div class="muted">Oluşturuluyor...</div>';
+      qrBox.innerHTML = '<div class="muted">Generating...</div>';
 
       const fd = new FormData(form);
 
@@ -129,33 +161,32 @@
         const data = await res.json().catch(() => ({}));
 
         if (!res.ok || !data.ok) {
-          msg.textContent = 'Hata: ' + (data.error || (res.status + ' ' + res.statusText));
-          qrBox.innerHTML = '<div class="muted">QR yok</div>';
+          msg.textContent = 'Error: ' + (data.error || (res.status + ' ' + res.statusText));
+          qrBox.innerHTML = '<div class="muted">No QR</div>';
           return;
         }
 
-        // QR göster
+        // Show QR
         const token = data.token;
         lastToken = token;
         const img = document.createElement('img');
-        img.src = apiBase + "/qr/png/" + token + "?t=" + Date.now(); // cache-bust
+        img.src = "data:image/png;base64," + data.qr_b64; // instant preview
         img.alt = 'QR Code';
         qrBox.innerHTML = '';
         qrBox.appendChild(img);
 
-        // Kişi bilgileri (backend print_info'dan)
+        // Person info
         const pi = data.print_info || {};
         fn.textContent  = pi['Full Name'] || '';
         em.textContent  = pi['Email'] || '';
         ro.textContent  = pi['Role'] || '';
-        eid.textContent = pi['Employee ID'] || '';   // NEW
-        dep.textContent = pi['Department'] || '';    // NEW
-        vu.textContent  = pi['Valid Until (UTC)'] || '';
-        ms.textContent  = pi['Max Scans'] || '';
+        eid.textContent = pi['Employee ID'] || '';
+        dep.textContent = pi['Department'] || '';
+        vu.textContent  = pi['Valid Until (Local)'] || '';
         tk.textContent  = token || '';
         infoTable.style.display = 'table';
 
-        // Payload otomatik
+        // Build payload automatically
         const payload = "MyCompanyGate|" + token;
         payloadInput.value = payload;
         btnVerify.disabled = false;
@@ -163,20 +194,20 @@
         printBtn.disabled = false;
       } catch (err) {
         console.error(err);
-        msg.textContent = 'İstek başarısız. Sunucu çalışıyor mu?';
-        qrBox.innerHTML = '<div class="muted">QR yok</div>';
+        msg.textContent = 'Request failed. Is the server running?';
+        qrBox.innerHTML = '<div class="muted">No QR</div>';
       }
     });
 
     btnCopy.addEventListener('click', async () => {
       if (!payloadInput.value) return;
       await navigator.clipboard.writeText(payloadInput.value);
-      verifyMsg.textContent = "Payload kopyalandı.";
+      verifyMsg.textContent = "Payload copied to clipboard.";
     });
 
     btnVerify.addEventListener('click', async () => {
       if (!lastToken) return;
-      verifyMsg.textContent = "Doğrulanıyor...";
+      verifyMsg.textContent = "Verifying...";
       try {
         const res = await fetch(apiBase + "/qr/verify", {
           method: "POST",
@@ -185,12 +216,12 @@
         });
         const data = await res.json();
         if (data.ok) {
-          verifyMsg.textContent = "İzin verildi. scan_count=" + data.scan_count + ", status=" + data.status;
+          verifyMsg.textContent = "Allowed. scan_count=" + data.scan_count + ", status=" + data.status;
         } else {
-          verifyMsg.textContent = "Reddedildi: " + data.reason;
+          verifyMsg.textContent = "Denied: " + data.reason;
         }
       } catch {
-        verifyMsg.textContent = "İstek başarısız.";
+        verifyMsg.textContent = "Request failed.";
       }
     });
 
