@@ -21,7 +21,7 @@ import base64
 
 
 
-app = FastAPI(title="Gate Entry API (no user_id)")
+app = FastAPI(title="QR KODU OLUSTURMA")
 
 # ---------- DB session dependency ----------
 def get_db():
@@ -35,7 +35,7 @@ def get_db():
 QR_DIR = Path("qr_images")
 QR_DIR.mkdir(exist_ok=True)
 
-ISSUER = "MyCompanyGate"  # payload issuer string for QR data
+ISSUER = "BenimGiriş"  # payload issuer string for QR data
 
 # ---------- Health ----------
 @app.get("/health")

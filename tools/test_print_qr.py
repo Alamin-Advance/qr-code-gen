@@ -9,7 +9,7 @@ PRINTER_PORT = 9100
 
 # The payload you really use in your system (issuer|token)
 # For a speed test we make a unique token each run:
-payload = f"MyCompanyGate|SPEEDTEST-{int(time.time())}"
+payload = f"BenimGiriş|SPEEDTEST-{int(time.time())}"
 
 def print_native_qr():
     """Fastest: use printer's hardware QR command."""

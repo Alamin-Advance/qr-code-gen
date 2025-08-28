@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Gate QR Issuer (No User ID)</title>
+  <title>QR KODU OLUSTURMA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 12px; }
@@ -14,7 +14,7 @@
     td { padding: 6px 8px; border-bottom: 1px solid #eee; }
     .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid #222; background: #022047; color: #f4f6f7; cursor: pointer; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .muted { color: #666; font-size: 12px; }
+    .muted { color: #f87b05; font-size: 14px; }
     .row2 { display:grid; grid-template-columns: 1fr auto auto; gap:8px; align-items:center; margin-top:8px; }
     input, select { width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; }
     @media print {.no-print { display:none !important; } .print-area { margin:0; border:none; }}
@@ -77,7 +77,7 @@
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-          <label>Aktif Okuma Sureci
+          <label>Aktif Okuma Sureci(Local)
             <input name="minutes_valid" type="number" value="10" min="0">
           </label>
           <label>Maksimum Okuma
@@ -96,7 +96,7 @@
       <div class="no-print">
         <h4 style="margin-top:16px;">Payload</h4>
         <div class="row2">
-          <input id="payload" type="text" readonly placeholder="MyCompanyGate|<token> will appear here">
+          <input id="payload" type="text" readonly placeholder="BenimGiriş|<token> will appear here">
           <button id="btnCopy" class="btn" type="button">Kopya</button>
           <button id="btnVerify" class="btn" type="button" disabled>Doğrulama</button>
         </div>
@@ -114,7 +114,7 @@
           <tr><td><b>Görev</b></td><td id="ro"></td></tr>
           <tr><td><b>Kullancı Numarası</b></td><td id="eid"></td></tr>
           <tr><td><b>Bölüm</b></td><td id="dep"></td></tr>
-          <tr><td><b>Aktif Okuma Sureci (Local)</b></td><td id="vu"></td></tr>
+          <tr><td><b>Aktif Okuma Sureci(Local)</b></td><td id="vu"></td></tr>
           <tr><td><b>Maksımum Okuma</b></td><td id="mo"></td></tr>
           <tr><td><b>Token</b></td><td id="tk" class="muted"></td></tr>
         </tbody>
@@ -183,20 +183,20 @@
         ro.textContent  = pi['Görev'] || '';
         eid.textContent = pi['Kullancı No'] || '';
         dep.textContent = pi['Bölüm'] || '';
-        vu.textContent  = pi['Aktif Okuma Sureci (Local)'] || '';
+        vu.textContent  = pi['Aktif Okuma Sureci(Local)'] || '';
         mo.textContent  = pi['Maksımum Okuma'] || '';
         tk.textContent  = token || '';
         infoTable.style.display = 'table';
 
         // Build payload automatically
-        const payload = "MyCompanyGate|" + token;
+        const payload = "BenimGiriş|" + token;
         payloadInput.value = payload;
         btnVerify.disabled = false;
 
         printBtn.disabled = false;
       } catch (err) {
         console.error(err);
-        msg.textContent = 'Request failed. Is the server running?';
+        msg.textContent = 'Istek Başarsızdır. Sunucu çalışıyor mu?';
         qrBox.innerHTML = '<div class="muted">No QR</div>';
       }
     });
@@ -209,7 +209,7 @@
 
     btnVerify.addEventListener('click', async () => {
       if (!lastToken) return;
-      verifyMsg.textContent = "Verifying...";
+      verifyMsg.textContent = "Doğrulama yapılmakdatır...";
       try {
         const res = await fetch(apiBase + "/qr/verify", {
           method: "POST",
@@ -218,9 +218,9 @@
         });
         const data = await res.json();
         if (data.ok) {
-          verifyMsg.textContent = "Allowed. scan_count=" + data.scan_count + ", status=" + data.status;
+          verifyMsg.textContent = "İzin Verildi. Okuma_Sayısı=" + data.scan_count + ", Durum=" + data.status;
         } else {
-          verifyMsg.textContent = "Denied: " + data.reason;
+          verifyMsg.textContent = "Reddildi: " + data.reason;
         }
       } catch {
         verifyMsg.textContent = "Request failed.";

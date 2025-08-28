@@ -51,7 +51,7 @@
 
       // Build payload automatically (if your page has that UI)
       if (payloadInput) {
-        payloadInput.value = "MyCompanyGate|" + token;
+        payloadInput.value = "BenimGiriş|" + token;
         if (btnVerify) btnVerify.disabled = false;
       }
 

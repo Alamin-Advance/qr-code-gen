@@ -9,7 +9,7 @@ import threading
 import pyttsx3
 
 API_BASE = "http://127.0.0.1:8000"   # FastAPI server
-ISSUER   = "MyCompanyGate"           # must match app.main.py
+ISSUER   = "BenimGiriş"           # must match app.main.py
 DISPLAY_HOLD_SEC = 10.0              # keep result on screen
 
 # ---------------- TTS (Text-to-Speech) setup ----------------
