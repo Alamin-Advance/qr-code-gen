@@ -19,6 +19,8 @@ from app.printer import print_qr_ticket  # uses your network printer
 from io import BytesIO
 import base64
 
+
+
 app = FastAPI(title="Gate Entry API (no user_id)")
 
 # ---------- DB session dependency ----------
@@ -255,8 +257,19 @@ def qr_status(token: str, db: Session = Depends(get_db)):
     }
 
 # ---------- Redirect root to docs & serve web ----------
+'''
 @app.get("/")
 def root():
     return RedirectResponse(url="/docs")
 
 app.mount("/web", StaticFiles(directory="web", html=True), name="web")
+'''
+from fastapi.responses import RedirectResponse
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/web/")
+
+# Mount the /web static folder using an absolute path
+WEB_DIR = Path(__file__).resolve().parent.parent / "web"   # points to F:/qr-code-gen/web
+app.mount("/web", StaticFiles(directory=str(WEB_DIR), html=True), name="web")

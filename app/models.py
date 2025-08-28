@@ -17,7 +17,7 @@ class QRToken(Base):
     scan_count = Column(Integer, default=0)
 
     # person info (all OPTIONAL; provided directly from the web form)
-    employee_id = Column(String, nullable=True)   # not unique, optional
+    employee_id = Column(String, nullable=True)
     full_name   = Column(String, nullable=True)
     email       = Column(String, nullable=True)
     role        = Column(String, nullable=True)
