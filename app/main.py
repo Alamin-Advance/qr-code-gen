@@ -11,7 +11,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import qrcode
-
 from app.db import SessionLocal
 from app.models import QRToken, ScanLog
 from app.config import TIMEZONE
@@ -19,9 +18,7 @@ from app.printer import print_qr_ticket  # uses your network printer
 from io import BytesIO
 import base64
 
-
-
-app = FastAPI(title="QR KODU OLUSTURMA")
+app = FastAPI(title="QR KODU OLUŞTURMA")
 
 # ---------- DB session dependency ----------
 def get_db():
@@ -145,7 +142,6 @@ def issue_qr(
         "Maksımum Okuma": rec.max_scans,
     }
 
-    
     # Background: print + render PNG (non-blocking)
     '''  if background:
         background.add_task(print_qr_ticket, payload, print_info)
@@ -172,6 +168,7 @@ def issue_qr(
         "qr_b64": _png_b64(),       # <— NEW: inline image for the web preview
         "print_info": print_info,
     }
+
 # ---------- Serve QR PNG by token ----------
 @app.get("/qr/png/{token}")
 def get_qr_png(token: str):

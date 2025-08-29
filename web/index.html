@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>QR KODU OLUSTURMA</title>
+  <title>QR KODU OLUŞTURMA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 12px; }
@@ -209,7 +209,7 @@
 
     btnVerify.addEventListener('click', async () => {
       if (!lastToken) return;
-      verifyMsg.textContent = "Doğrulama yapılmakdatır...";
+      verifyMsg.textContent = "Doğrulama yapılmaktadır...";
       try {
         const res = await fetch(apiBase + "/qr/verify", {
           method: "POST",
