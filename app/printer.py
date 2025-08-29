@@ -30,7 +30,8 @@ def print_qr_ticket(payload: str, info: Dict[str, str]) -> bool:
     """
     try:
         p = Network(PRINTER_IP, PRINTER_PORT, timeout=5)
-
+        
+        #p.charcode("CP1254")   # make sure Turkish letters print correctly (try "CP1254")
         # Header
         p.set(align="center", width=2, height=2, bold=True)
         p.text("Giris QR Kodu\n")
